@@ -1,25 +1,32 @@
+---
+title: "Summary of Luke's Spotify listening"
+author: "Luke Pilling"
+date: "2025-07-18"
+format: html
+editor: visual
+---
 
-# Luke Pilling -- lcpilling.github.io
-# 2025.07.11
+I've had a Spotify account since 23rd March 2012, and have been using it pretty much every day since then. I thought it would be interesting to summarise my listening habits over the years, so here I present some plots of my listening data.
 
-# initial summary of music data
+The code and data are available here: <https://github.com/lcpilling/spotify>
 
+## Read and tidy data
 
-# read
+```{r}
 dat_music <- readr::read_tsv(here::here("data/derived/music.tsv.gz"))
-#dat_audiobook <- readr::read_tsv("data/derived/audiobook.tsv.gz")
-#dat_episode <- readr::read_tsv("data/derived/episode.tsv.gz")
-
-
-# tidy ----
 
 # remove the birdsong I used as an alarm for a while
 dat_music <- dat_music |> dplyr::filter(master_metadata_album_artist_name != "Nature Sounds")
+```
 
+## Play time
 
-# play time ----
+### Time by year
 
-## time by year ----
+Determine total hours and average per day to display.
+
+```{r}
+#| code-fold: true
 dat_time <- dat_music |>
 	dplyr::group_by(year) |>
 	dplyr::summarise(n=round(sum(duration)/60/60))
@@ -53,11 +60,13 @@ dat_time  |>
 		panel.grid.minor.y = ggplot2::element_blank()
 	)
 
-ggplot2::ggsave("outputs/music_time_byyear.png", width=14, height=14, units="cm", dpi=150, bg="white")
+ggplot2::ggsave(here::here("outputs/music_time_byyear.png"), width=14, height=14, units="cm", dpi=150, bg="white")
+```
 
+### Time by month
 
-## time by month ----
-
+```{r}
+#| code-fold: true
 dat_time <- dat_music |>
 	dplyr::mutate(month=lubridate::month(date, label=TRUE)) |>
 	dplyr::group_by(month) |>
@@ -87,11 +96,13 @@ dat_time  |>
 		panel.grid.minor.y = ggplot2::element_blank()
 	)
 
-ggplot2::ggsave("outputs/music_time_bymonth.png", width=14, height=12, units="cm", dpi=150, bg="white")
+ggplot2::ggsave(here::here("outputs/music_time_bymonth.png"), width=14, height=12, units="cm", dpi=150, bg="white")
+```
 
+### Time by month - average
 
-## time by month - average ----
-
+```{r}
+#| code-fold: true
 dat_time <- dat_music |>
 	dplyr::mutate(month=lubridate::month(date, label=TRUE)) |>
 	dplyr::group_by(month) |>
@@ -121,12 +132,13 @@ dat_time  |>
 		panel.grid.minor.y = ggplot2::element_blank()
 	)
 
-ggplot2::ggsave("outputs/music_time_bymonth_average.png", width=14, height=12, units="cm", dpi=150, bg="white")
+ggplot2::ggsave(here::here("outputs/music_time_bymonth_average.png"), width=14, height=12, units="cm", dpi=150, bg="white")
+```
 
+### Time by day
 
-
-## time by day ----
-
+```{r}
+#| code-fold: true
 dat_time <- dat_music |>
 	dplyr::mutate(day=lubridate::wday(date, label=TRUE, week_start=1)) |>
 	dplyr::group_by(day) |>
@@ -156,13 +168,13 @@ dat_time  |>
 		panel.grid.minor.y = ggplot2::element_blank()
 	)
 
-ggplot2::ggsave("outputs/music_time_byday.png", width=14, height=12, units="cm", dpi=150, bg="white")
+ggplot2::ggsave(here::here("outputs/music_time_byday.png"), width=14, height=12, units="cm", dpi=150, bg="white")
+```
 
+### Time by day - average
 
-
-
-## time by day - average ----
-
+```{r}
+#| code-fold: true
 dat_time <- dat_music |>
 	dplyr::mutate(day=lubridate::wday(date, label=TRUE, week_start=1)) |>
 	dplyr::group_by(day) |>
@@ -192,11 +204,13 @@ dat_time  |>
 		panel.grid.minor.y = ggplot2::element_blank()
 	)
 
-ggplot2::ggsave("outputs/music_time_byday_average.png", width=14, height=12, units="cm", dpi=150, bg="white")
+ggplot2::ggsave(here::here("outputs/music_time_byday_average.png"), width=14, height=12, units="cm", dpi=150, bg="white")
+```
 
+### Summary stats by day
 
-## summary stats by day ----
-
+```{r}
+#| code-fold: true
 dat_time <- dat_music |>
 	dplyr::group_by(date) |>
 	dplyr::summarise(n=sum(duration)/60)
@@ -227,19 +241,24 @@ dat_time |>
 		panel.grid.minor.y = ggplot2::element_blank()
 	)
 
-ggplot2::ggsave("outputs/mins_by_day.png", width=14, height=14, units="cm", dpi=150, bg="white")
+ggplot2::ggsave(here::here("outputs/mins_by_day.png"), width=14, height=14, units="cm", dpi=150, bg="white")
+```
 
+### Several days over 500 mins!
 
-## days over 500 mins!
-
+```{r}
+#| code-fold: true
 dat_time |> dplyr::filter(n>500)
+```
 
+These look a lot like I just left it running at NYE parties or similar.
 
+## Songs
 
+### Ever
 
-# songs ----
-
-## ever ----
+```{r}
+#| code-fold: true
 dat_songs <- dat_music |>
 	dplyr::count(master_metadata_track_name, master_metadata_album_artist_name) |>
 	dplyr::arrange(-n)
@@ -268,9 +287,16 @@ dat_songs |>
 		panel.grid.minor.y = ggplot2::element_blank()
 	)
 
-ggplot2::ggsave("outputs/songs_top15.png", width=14, height=14, units="cm", dpi=150, bg="white")
+ggplot2::ggsave(here::here("outputs/songs_top15.png"), width=14, height=14, units="cm", dpi=150, bg="white")
+```
 
-## by year ----
+### By year
+
+```{r}
+#| fig-width: 7
+#| fig-height: 9
+#| code-fold: true
+
 dat_songs_year <- dat_music |>
 	dplyr::group_by(year) |>
 	dplyr::count(master_metadata_track_name, master_metadata_album_artist_name) |>
@@ -312,13 +338,15 @@ dat_songs_year |>
 	tidytext::scale_x_reordered() +
 	ggplot2::facet_grid(factor(year, levels=c(2025:2012)) ~ ., scale="free", space="free")
 
-ggplot2::ggsave("outputs/songs_top5_byyear.png", width=18, height=25, units="cm", dpi=150, bg="white")
+ggplot2::ggsave(here::here("outputs/songs_top5_byyear.png"), width=18, height=25, units="cm", dpi=150, bg="white")
+```
 
+## Artists
 
+### Ever
 
-# artists ----
-
-## ever ----
+```{r}
+#| code-fold: true
 dat_artists <- dat_music |>
 	dplyr::group_by(master_metadata_album_artist_name) |>
 	dplyr::summarise(n=round(sum(duration)/60/60)) |> 
@@ -347,13 +375,22 @@ dat_artists |>
 		panel.grid.minor.y = ggplot2::element_blank()
 	)
 
-ggplot2::ggsave("outputs/artists_top15.png", width=16, height=13, units="cm", dpi=150, bg="white")
+ggplot2::ggsave(here::here("outputs/artists_top15.png"), width=16, height=13, units="cm", dpi=150, bg="white")
+```
 
-## by year ----
+### By year
+
+```{r}
+#| fig-width: 7
+#| fig-height: 9
+#| code-fold: true
+
 dat_artists_year <- dat_music |>
 	dplyr::group_by(year, master_metadata_album_artist_name) |>
 	dplyr::summarise(n=round(sum(duration)/60/60)) |> 
 	dplyr::arrange(-n)
+
+#plot
 
 dat_artists_year |>
 	dplyr::filter(dplyr::row_number() <= 5) |>
@@ -380,6 +417,5 @@ dat_artists_year |>
 	tidytext::scale_x_reordered() +
 	ggplot2::facet_grid(factor(year, levels=c(2025:2012)) ~ ., scale="free", space="free")
 
-ggplot2::ggsave("outputs/artists_top5_byyear.png", width=20, height=25, units="cm", dpi=150, bg="white")
-
-
+ggplot2::ggsave(here::here("outputs/artists_top5_byyear.png"), width=20, height=25, units="cm", dpi=150, bg="white")
+```

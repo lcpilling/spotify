@@ -2,6 +2,8 @@
 
 Data from 23rd March 2012 to 11th July 2025
 
+For the web (Quarto) version of the output visit [lcpilling.github.io/spotify](https://lcpilling.github.io/spotify/)
+
 ## Data
 
 Raw data is in JSON format. 
@@ -17,15 +19,7 @@ Derived data is tabular in "tidy" format.
 
 Plots produced by analysis scripts.
 
-### Total play time per year
+For example:
 
 <img src="outputs/music_time_byyear.png">
-
-### Top 15 artists by total play time
-
-<img src="outputs/artists_top15.png">
-
-### Top 15 song by number of plays
-
-<img src="outputs/songs_top15.png">
 
